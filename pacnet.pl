@@ -40,7 +40,7 @@ sub categories() {
 
 sub getdb() {
 	print ":: ${BLUE}Downloading package database...$NORMAL\n";
-	if(system("wget http://pacnet.karbownicki.com/api/packages/ -O pacdb")) {#Why do I use wget instead of LWP? Just beacuse everyone has wget, and not everyone has LWP.
+	if(system("wget http://pacnet.karbownicki.com/api/packages/ -O ~/.pacnet.db")) {#Why do I use wget instead of LWP? Just beacuse everyone has wget, and not everyone has LWP.
 		die(":: Could not obtain package database, exiting\n");
   }
 }
@@ -52,9 +52,9 @@ sub printall() {
 }
 
 sub readdb() {
-	getdb unless(-e "pacdb");
+	getdb unless(-e "~/.pacnet.db");
 	
-	open(my $db, "<", "pacdb") or die("Could not open the package database, exiting\n");
+	open(my $db, "<", "~/.pacnet.db") or die("Could not open the package database, exiting\n");
 	my $json;
 	$json .= $_	while(<$db>);
 	$packages = decode_json($json);
