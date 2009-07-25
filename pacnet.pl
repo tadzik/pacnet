@@ -41,7 +41,7 @@ if(!$args) {
 	printall;
 } else {
 	for(@{$packages}) {
-		if($_->{name} =~ ${ARGV[0]}) {
+		if($_->{name} =~ $ARGV[0] || $_->{category__name} =~ $ARGV[0]) {
 			print "$CYAN$_->{category__name}$NORMAL/$GREEN$_->{name}$NORMAL $BLUE($_->{version})$NORMAL\n\t$_->{description}\n\n";
 		}
 	}
