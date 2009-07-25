@@ -11,20 +11,38 @@ my $NORMAL = "\e[0m";
 my $BLUE = "\e[1;34m";
 my $packages; #here be database
 
+sub categories() {
+	my $catname = shift @ARGV;
+	if($catname) {
+		for(@{$packages}) {
+			if($_->{category__name} eq $catname) {
+				print "$CYAN$_->{category__name}$NORMAL/$GREEN$_->{name}$NORMAL $BLUE($_->{version})$NORMAL\n\t$_->{description}\n\n";
+			}
+		}
+	} else {
+		my @cats;
+		for(@{$packages}) {
+			my $found;
+			for my $cat (@cats) {
+				if($_->{category__name} eq $cat) {
+					$found = 1;
+					last;
+				}
+			}
+			unless($found) {
+				push @cats, $_->{category__name};
+			}
+		}
+		print ":: The following categories are available:\n\n";
+		print "$_\n" for(sort @cats);
+	}
+}
+
 sub getdb() {
-	print ":: Downloading package database...\n";
+	print ":: ${BLUE}Downloading package database...$NORMAL\n";
 	if(system("wget http://pacnet.karbownicki.com/api/packages/ -O pacdb")) {#Why do I use wget instead of LWP? Just beacuse everyone has wget, and not everyone has LWP.
 		die(":: Could not obtain package database, exiting\n");
   }
-}
-
-sub readdb() {
-	getdb unless(-e "pacdb");
-	
-	open(my $db, "<", "pacdb") or die ("Could not open the package database, exiting\n");
-	my $json;
-	$json .= $_	while(<$db>);
-	$packages = decode_json($json);
 }
 
 sub printall() {
@@ -33,16 +51,43 @@ sub printall() {
 	}
 }
 
-#main
+sub readdb() {
+	getdb unless(-e "pacdb");
+	
+	open(my $db, "<", "pacdb") or die("Could not open the package database, exiting\n");
+	my $json;
+	$json .= $_	while(<$db>);
+	$packages = decode_json($json);
+}
+
+sub usage() {
+	print <<'END';
+pacnet usage:
+  -c             => list all available categories
+  -c <category>  => list all packages in specified category
+  -h             => show usage info (you are reading it now :>)
+  -s             => synchronise package database
+END
+}
+
 readdb();
 my $args = @ARGV;
 
 if(!$args) {
 	printall;
 } else {
-	for(@{$packages}) {
-		if($_->{name} =~ $ARGV[0] || $_->{category__name} =~ $ARGV[0]) {
-			print "$CYAN$_->{category__name}$NORMAL/$GREEN$_->{name}$NORMAL $BLUE($_->{version})$NORMAL\n\t$_->{description}\n\n";
+	my $arg = shift @ARGV;
+	if($arg eq "-s") {
+		getdb;
+	} elsif($arg eq "-c") {
+		categories;
+	} elsif($arg eq "-h" || $arg eq "--help"){
+		usage;
+	} else {
+		for(@{$packages}) {
+			if($_->{name} =~ $arg) {
+				print "$CYAN$_->{category__name}$NORMAL/$GREEN$_->{name}$NORMAL $BLUE($_->{version})$NORMAL\n\t$_->{description}\n\n";
+			}
 		}
 	}
 }
