@@ -67,6 +67,7 @@ pacnet usage:
   -c <category>  => list all packages in specified category
   -h             => show usage info (you are reading it now :>)
   -s             => synchronise package database
+  <regexp>       => search for a package with name matching provided regexp
 END
 }
 
