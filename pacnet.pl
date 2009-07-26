@@ -54,7 +54,7 @@ sub printall() {
 sub readdb() {
 	my @files = glob("~/.pacnet.db");
 	my $filename = shift @files;
-	getdb unless defined $filename;
+	getdb unless(-e $filename);
 	
 	open(my $db, "<", $filename) or die("Could not open the package database, exiting\n");
 	my $json;
