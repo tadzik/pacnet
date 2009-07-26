@@ -52,9 +52,11 @@ sub printall() {
 }
 
 sub readdb() {
-	getdb unless(-e "~/.pacnet.db");
+	my @files = glob("~/.pacnet.db");
+	my $filename = shift @files;
+	getdb unless defined $filename;
 	
-	open(my $db, "<", "~/.pacnet.db") or die("Could not open the package database, exiting\n");
+	open(my $db, "<", $filename) or die("Could not open the package database, exiting\n");
 	my $json;
 	$json .= $_	while(<$db>);
 	$packages = decode_json($json);
