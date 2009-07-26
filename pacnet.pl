@@ -15,7 +15,7 @@ sub categories() {
 	my $catname = shift @ARGV;
 	if($catname) {
 		for(@{$packages}) {
-			if($_->{category__name} eq $catname) {
+			if($_->{category__name} =~ $catname) {
 				print "$CYAN$_->{category__name}$NORMAL/$GREEN$_->{name}$NORMAL $BLUE($_->{version})$NORMAL\n\t$_->{description}\n\n";
 			}
 		}
@@ -65,11 +65,11 @@ sub readdb() {
 sub usage() {
 	print <<'END';
 pacnet usage:
-  -c             => list all available categories
-  -c <category>  => list all packages in specified category
-  -h             => show usage info (you are reading it now :>)
-  -s             => synchronise package database
-  <regexp>       => search for a package with name matching provided regexp
+  -c (--category)             => list all available categories
+  -c (--category) <category>  => list all packages in specified category
+  -h (--help)                 => show usage info (you are reading it now :>)
+  -s (--sync)                 => synchronise package database
+  <regexp>                    => search for a package with name matching provided regexp
 END
 }
 
@@ -80,9 +80,9 @@ if(!$args) {
 	printall;
 } else {
 	my $arg = shift @ARGV;
-	if($arg eq "-s") {
+	if($arg eq "-s" || $arg eq "--sync") {
 		getdb;
-	} elsif($arg eq "-c") {
+	} elsif($arg eq "-c" || $arg eq "--category") {
 		categories;
 	} elsif($arg eq "-h" || $arg eq "--help"){
 		usage;
