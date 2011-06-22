@@ -12,10 +12,11 @@ my $dbfile = $ENV{'HOME'} . '/.config/pacnet.db';
 
 sub printpackage {
     my $p = shift;
-    say colored("$p->{category__name}", 'bold cyan'), '/',
-        colored("$p->{name}", 'bold green'), ' ',
-        colored("($p->{version})", 'bold blue'),
-        "\n    $_->{description}";
+    say colored('*', 'green'), ' ',
+        $p->{'category__name'} .'/',
+        colored($p->{'name'}, 'bold'), "\n     ",
+        colored("Version:    \t", 'green'), $p->{'version'}, "\n     ",
+        colored("Description:\t", 'green'), $p->{'description'}, "\n";
 }
 
 sub getdb {
