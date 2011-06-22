@@ -2,7 +2,7 @@
 use JSON::XS;
 use Term::ANSIColor;
 use Getopt::Long;
-use File::Slurp 'slurp';
+use File::Slurp 'slurp', 'write_file';
 use 5.012;
 
 my @packages; #here be database
@@ -23,12 +23,18 @@ sub packagestring {
     return $p->{'category__name'} . '/' . $p->{'name'};
 }
 
+sub readdb;
+
 sub getdb {
     require LWP::Simple;
     unless(LWP::Simple::getstore($dburl, $dbfile) == 200) {
         say "Failed downloading the package database";
         exit 1;
     }
+    readdb;
+    @packages = map { $_->{'_packagestring'} = packagestring($_); $_ }
+                @packages;
+    write_file($dbfile, encode_json(\@packages));
 }
 
 sub readdb {
@@ -57,7 +63,7 @@ sub MAIN {
     if (scalar @ARGV) {
         my $count = 0;
         printpackage($_) && $count++
-            for grep { packagestring($_) =~ $ARGV[0] } @packages;
+            for grep { $_->{'_packagestring'} =~ $ARGV[0] } @packages;
         given ($count) {
             when (0) {
                 say "No matches found";
