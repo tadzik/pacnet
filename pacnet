@@ -19,6 +19,11 @@ sub printpackage {
         colored("Description:\t", 'green'), $p->{'description'}, "\n";
 }
 
+sub packagestring {
+    my $p = shift;
+    return $p->{'category__name'} . '/' . $p->{'name'};
+}
+
 sub getdb {
     unless(getstore($dburl, $dbfile) == RC_OK) {
         say "Failed downloading the package database";
@@ -37,7 +42,7 @@ sub usage {
 pacnet usage:
   -h (--help)  => show usage information
   -s (--sync)  => synchronise package database
-  <regexp>     => search for a package with name matching provided regexp
+  <regexp>     => search for a package matching <regexp>
 END
 }
 
@@ -50,7 +55,8 @@ sub MAIN {
     readdb;
 
     if (scalar @ARGV) {
-        printpackage($_) for grep { $_->{name} =~ $ARGV[0] } @packages;
+        printpackage($_)
+            for grep { packagestring($_) =~ $ARGV[0] } @packages;
     }
 }
 
