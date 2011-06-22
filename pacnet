@@ -39,11 +39,10 @@ sub readdb {
 
 sub usage {
     print <<'END';
-pacnet usage:
-  -h (--help)  => show usage information
-  -s (--sync)  => synchronise package database
-  --nocolor    => turn of coloring
-  <regexp>     => search for a package matching <regexp>
+Usage: pacnet <regexp>
+Flags: -h (--help)  => show usage information
+       -s (--sync)  => synchronise package database
+       --nocolor    => turn off colouring
 END
 }
 
@@ -65,7 +64,7 @@ sub MAIN {
                 say "No matches found";
             }
             when (1) { }
-            default {
+            default  {
                 say "Found $count matches.";
             }
         }
