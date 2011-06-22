@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+use JSON::XS;
+use Term::ANSIColor;
+use Getopt::Long;
+use LWP::Simple;
+use File::Slurp 'slurp';
+use 5.012;
+
+my @packages; #here be database
+my $dburl  = 'http://pacnet.karbownicki.com/api/packages/';
+my $dbfile = $ENV{'HOME'} . '/.config/pacnet.db';
+
+sub printpackage {
+    my $p = shift;
+    say colored("$p->{category__name}", 'bold cyan'), '/',
+        colored("$p->{name}", 'bold green'), ' ',
+        colored("($p->{version})", 'bold blue'),
+        "\n    $_->{description}";
+}
+
+sub getdb {
+    unless(getstore($dburl, $dbfile) == RC_OK) {
+        say "Failed downloading the package database";
+        exit 1;
+    }
+}
+
+sub readdb {
+    getdb unless -f $dbfile;
+    my $json = slurp $dbfile;
+    @packages = @{decode_json($json)};
+}
+
+sub usage {
+    print <<'END';
+pacnet usage:
+  -h (--help)  => show usage information
+  -s (--sync)  => synchronise package database
+  <regexp>     => search for a package with name matching provided regexp
+END
+}
+
+sub MAIN {
+    my $res = GetOptions(
+        "s|sync" => sub { getdb },
+        "h|help" => sub { usage; exit 0 },
+    );
+
+    readdb;
+
+    if (scalar @ARGV) {
+        printpackage($_) for grep { $_->{name} =~ $ARGV[0] } @packages;
+    } else {
+        printpackage($_) for @packages;
+    }
+}
+
+MAIN;
+
+# vim: ft=perl
