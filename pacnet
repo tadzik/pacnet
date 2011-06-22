@@ -55,8 +55,18 @@ sub MAIN {
     readdb;
 
     if (scalar @ARGV) {
-        printpackage($_)
+        my $count = 0;
+        printpackage($_) && $count++
             for grep { packagestring($_) =~ $ARGV[0] } @packages;
+        given ($count) {
+            when (0) {
+                say "No matches found";
+            }
+            when (1) { }
+            default {
+                say "Found $count matches.";
+            }
+        }
     }
 }
 
