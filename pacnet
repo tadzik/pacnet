@@ -42,14 +42,16 @@ sub usage {
 pacnet usage:
   -h (--help)  => show usage information
   -s (--sync)  => synchronise package database
+  --nocolor    => turn of coloring
   <regexp>     => search for a package matching <regexp>
 END
 }
 
 sub MAIN {
     my $res = GetOptions(
-        "s|sync" => sub { getdb },
-        "h|help" => sub { usage },
+        "s|sync"  => sub { getdb },
+        "h|help"  => sub { usage },
+        "nocolor" => sub { $ENV{'ANSI_COLORS_DISABLED'} = 1 },
     );
 
     readdb;
