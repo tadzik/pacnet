@@ -43,15 +43,13 @@ END
 sub MAIN {
     my $res = GetOptions(
         "s|sync" => sub { getdb },
-        "h|help" => sub { usage; exit 0 },
+        "h|help" => sub { usage },
     );
 
     readdb;
 
     if (scalar @ARGV) {
         printpackage($_) for grep { $_->{name} =~ $ARGV[0] } @packages;
-    } else {
-        printpackage($_) for @packages;
     }
 }
 
