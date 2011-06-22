@@ -2,7 +2,6 @@
 use JSON::XS;
 use Term::ANSIColor;
 use Getopt::Long;
-use LWP::Simple;
 use File::Slurp 'slurp';
 use 5.012;
 
@@ -25,7 +24,8 @@ sub packagestring {
 }
 
 sub getdb {
-    unless(getstore($dburl, $dbfile) == RC_OK) {
+    require LWP::Simple;
+    unless(LWP::Simple::getstore($dburl, $dbfile) == 200) {
         say "Failed downloading the package database";
         exit 1;
     }
