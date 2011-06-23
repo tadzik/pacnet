@@ -62,8 +62,9 @@ sub MAIN {
 
     if (scalar @ARGV) {
         my $count = 0;
+        my $reg = qr/$ARGV[0]/;
         printpackage($_) && $count++
-            for grep { $_->{'_packagestring'} =~ $ARGV[0] } @packages;
+            for grep { $_->{'_packagestring'} ~~ $reg } @packages;
         given ($count) {
             when (0) {
                 say "No matches found";
