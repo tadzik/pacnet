@@ -45,17 +45,18 @@ sub readdb {
 
 sub usage {
     print <<'END';
-pacnet usage:
-  -h (--help)  => show usage information
-  -s (--sync)  => synchronise package database
-  <regexp>     => search for a package matching <regexp>
+Usage: pacnet <regexp>
+Flags: -h (--help)  => show usage information
+       -s (--sync)  => synchronise package database
+       --nocolor    => turn off colouring
 END
 }
 
 sub MAIN {
     my $res = GetOptions(
-        "s|sync" => sub { getdb },
-        "h|help" => sub { usage },
+        "s|sync"  => sub { getdb },
+        "h|help"  => sub { usage },
+        "nocolor" => sub { $ENV{'ANSI_COLORS_DISABLED'} = 1 },
     );
 
     readdb;
@@ -70,7 +71,7 @@ sub MAIN {
                 say "No matches found";
             }
             when (1) { }
-            default {
+            default  {
                 say "Found $count matches.";
             }
         }
