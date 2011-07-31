@@ -2,7 +2,7 @@
 use JSON::XS;
 use Term::ANSIColor;
 use Getopt::Long;
-use File::Slurp 'slurp';
+use autodie;
 use 5.012;
 
 my @packages; #here be database
@@ -33,7 +33,9 @@ sub getdb {
 
 sub readdb {
     getdb unless -f $dbfile;
-    my $json = slurp $dbfile;
+    open my $db, '<', $dbfile;
+    my $json  = do { local $/; <$db> }; # slurp
+    close $db;
     @packages = @{decode_json($json)};
 }
 
